@@ -32,6 +32,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -44,9 +45,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.internal.tmf.ui.ITmfImageConstants;
 import org.eclipse.tracecompass.internal.tmf.ui.Messages;
@@ -181,6 +187,31 @@ public class CallStackView extends AbstractTimeGraphView {
     // ------------------------------------------------------------------------
     // Classes
     // ------------------------------------------------------------------------
+
+    private class DurationFilterSpinner extends ContributionItem {
+         @Override
+         public void fill(ToolBar parent, int index) {
+             ToolItem sep = new ToolItem(parent, SWT.SEPARATOR);
+             Spinner spinner = new Spinner(parent, SWT.BORDER);
+             spinner.setMaximum(Integer.MAX_VALUE);
+             spinner.setMinimum(0);
+             spinner.setDigits(2);
+             spinner.setSelection(0);
+             spinner.setToolTipText(Messages.CallStackView_MinimumDurationSpinnerToolTipText);
+             getTimeGraphViewer().getTimeGraphControl().setMinDuration(0);
+             spinner.addSelectionListener(new SelectionAdapter() {
+                 @Override
+                 public void widgetSelected(SelectionEvent e) {
+                     int selection = spinner.getSelection();
+                     int digits = spinner.getDigits();
+                     //The spinner shows milliseconds, convert that to nanoseconds by multiplying by 10^6
+                     getTimeGraphViewer().getTimeGraphControl().setMinDuration(Math.round(selection / Math.pow(10, digits) * 1000000));
+                 }
+             });
+             sep.setControl(spinner);
+             sep.setWidth(100);
+         }
+    }
 
     private static class TraceEntry extends TimeGraphEntry {
         public TraceEntry(String name, long startTime, long endTime) {
@@ -963,6 +994,7 @@ public class CallStackView extends AbstractTimeGraphView {
         manager.add(fNextItemAction);
         manager.add(getTimeGraphViewer().getZoomInAction());
         manager.add(getTimeGraphViewer().getZoomOutAction());
+        manager.add(new DurationFilterSpinner());
     }
 
     /**

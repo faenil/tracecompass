@@ -91,6 +91,12 @@ public class TimeChartAnalysisEntry implements ITimeGraphEntry {
         return new EntryIterator(startTime, stopTime, maxDuration);
     }
 
+    //Not implemented
+    @Override
+    public Iterator<@NonNull ITimeEvent> getTimeEventsIterator(long startTime, long stopTime, long maxDuration, long minDuration) {
+        return new EntryIterator(startTime, stopTime, maxDuration);
+    }
+
     private class EntryIterator implements Iterator<@NonNull ITimeEvent> {
         private final long fIteratorStartTime;
         private final long fIteratorStopTime;

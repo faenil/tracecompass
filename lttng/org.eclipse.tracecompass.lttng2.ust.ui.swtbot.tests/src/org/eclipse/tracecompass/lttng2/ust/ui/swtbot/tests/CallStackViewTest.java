@@ -122,6 +122,7 @@ public class CallStackViewTest {
     private static final @NonNull String SELECT_NEXT_ITEM = "Select Next Item";
     private static final @NonNull String ZOOM_IN = "Zoom In";
     private static final @NonNull String ZOOM_OUT = "Zoom Out";
+    private static final @NonNull String MIN_DURATION_SPINNER = "The minimum duration of the events shown by the view, in milliseconds";
     // Separator
     private static final String PIN_VIEW = "Pin View";
     private static final List<String> TOOLBAR_BUTTONS_TOOLTIPS = ImmutableList.of(
@@ -135,7 +136,7 @@ public class CallStackViewTest {
             "",
             ADD_BOOKMARK, PREVIOUS_MARKER, NEXT_MARKER,
             "",
-            SELECT_PREVIOUS_ITEM, SELECT_NEXT_ITEM, ZOOM_IN, ZOOM_OUT,
+            SELECT_PREVIOUS_ITEM, SELECT_NEXT_ITEM, ZOOM_IN, ZOOM_OUT, MIN_DURATION_SPINNER,
             "",
             PIN_VIEW);
 

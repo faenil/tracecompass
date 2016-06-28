@@ -334,6 +334,7 @@ public class Messages extends NLS {
     public static String CallStackView_SortByThreadName;
     public static String CallStackView_SortByThreadId;
     public static String CallStackView_SortByThreadTime;
+    public static String CallStackView_MinimumDurationSpinnerToolTipText;
 
     public static String CallStackView_ConfigureSymbolProvidersText;
     public static String CallStackView_ConfigureSymbolProvidersTooltip;

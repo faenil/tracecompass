@@ -48,6 +48,7 @@ public class EventIterator implements Iterator<@NonNull ITimeEvent> {
     private ITimeEvent fNext = null;
     private ITimeEvent fSplitNext = null;
     private ITimeEvent fZoomedNext = null;
+    private long fMinDuration = 0;
 
     /**
      * Basic constructor, with start time and end times equal to the lowest and
@@ -90,19 +91,44 @@ public class EventIterator implements Iterator<@NonNull ITimeEvent> {
         fEndTime = endTime;
     }
 
+    /**
+     * Complete constructor, where we specify start, end times and minimum duration of the events..
+     *
+     * @param eventList
+     *            The list on which this iterator will iterate
+     * @param zoomedEventList
+     *            The "zoomed" list
+     * @param startTime
+     *            The start time
+     * @param endTime
+     *            The end time
+     * @param minDuration
+     *            The minimum duration of the events returned by this iterator
+     */
+    public EventIterator(List<ITimeEvent> eventList,
+            List<ITimeEvent> zoomedEventList, long startTime, long endTime, long minDuration) {
+        this(eventList, zoomedEventList, startTime, endTime);
+        fMinDuration = minDuration;
+    }
+
     @Override
     public boolean hasNext() {
         if (fNext == null && fEventList != null) {
             while (fIndex < fEventList.size()) {
                 ITimeEvent event = fEventList.get(fIndex++);
-                if (event.getTime() + event.getDuration() >= fStartTime && event.getTime() <= fEndTime &&
-                        (event.getTime() < fZoomedStartTime || event.getTime() + event.getDuration() > fZoomedEndTime)) {
+                long duration = event.getDuration();
+                if (duration < fMinDuration) {
+                    continue;
+                }
+
+                if (event.getTime() + duration >= fStartTime && event.getTime() <= fEndTime &&
+                        (event.getTime() < fZoomedStartTime || event.getTime() + duration > fZoomedEndTime)) {
                     // the event is visible and is not completely hidden by the zoomed events
                     fNext = event;
-                    if (event.getTime() < fZoomedEndTime && event.getTime() + event.getDuration() > fZoomedStartTime) {
+                    if (event.getTime() < fZoomedEndTime && event.getTime() + duration > fZoomedStartTime) {
                         // the event is partially hidden by the zoomed events and must be split
                         fNext = null;
-                        if (event.getTime() + event.getDuration() > fZoomedEndTime && fZoomedEndTime < fEndTime) {
+                        if (event.getTime() + duration > fZoomedEndTime && fZoomedEndTime < fEndTime) {
                             // the end of the event is partially hidden by the zoomed events and is visible
                             fNext = event.splitAfter(fZoomedEndTime);
                         }
@@ -125,6 +151,11 @@ public class EventIterator implements Iterator<@NonNull ITimeEvent> {
         if (fZoomedNext == null && fZoomedEventList != null) {
             while (fZoomedIndex < fZoomedEventList.size()) {
                 ITimeEvent event = fZoomedEventList.get(fZoomedIndex++);
+
+                if (event.getDuration() < fMinDuration) {
+                    continue;
+                }
+
                 if (event.getTime() + event.getDuration() >= fStartTime && event.getTime() <= fEndTime) {
                     // the zoomed event is visible
                     fZoomedNext = event;

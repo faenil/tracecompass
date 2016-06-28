@@ -106,6 +106,24 @@ public interface ITimeGraphEntry {
     <T extends ITimeEvent> Iterator<@NonNull T> getTimeEventsIterator(long startTime, long stopTime, long visibleDuration);
 
     /**
+     * Get an iterator which only returns events that fall within the start time
+     * and the stop time. The visible duration is the event duration below which
+     * further detail is not discernible. Moreover, the events shorter than the
+     * specified minimum duration will be filtered out.
+     *
+     * @param startTime
+     *            start time in nanoseconds
+     * @param stopTime
+     *            stop time in nanoseconds
+     * @param visibleDuration
+     *            duration of one pixel in nanoseconds
+     * @param minDuration
+     *            the minimum duration of the events returned by the iterator
+     * @return the iterator
+     */
+    <T extends ITimeEvent> Iterator<@NonNull T> getTimeEventsIterator(long startTime, long stopTime, long visibleDuration, long minDuration);
+
+    /**
      * Test if this time graph entry matches with this pattern
      *
      * @param pattern

@@ -156,6 +156,15 @@ public class TimeGraphEntry implements ITimeGraphEntry {
         return new EventIterator(fEventList, fZoomedEventList, startTime, stopTime);
     }
 
+    @Override
+    public Iterator<@NonNull ITimeEvent> getTimeEventsIterator(long startTime, long stopTime, long visibleDuration, long minDuration) {
+        if (!hasTimeEvents()) {
+            return null;
+        }
+        return new EventIterator(fEventList, fZoomedEventList, startTime, stopTime, minDuration);
+    }
+
+
     /**
      * Add an event to this entry's event list. If necessary, update the start
      * and end time of the entry. If the event list's last event starts at the

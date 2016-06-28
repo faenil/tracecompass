@@ -1,3 +1,4 @@
+
 /*****************************************************************************
  * Copyright (c) 2007, 2016 Intel Corporation and others
  *
@@ -186,6 +187,8 @@ public class TimeGraphControl extends TimeGraphBaseControl
     private long fVerticalZoomAlignTime = 0;
     private int fBorderWidth = 0;
     private int fHeaderHeight = 0;
+    //Events shorter than this will be filtered out. Value in nanoseconds
+    private long fMinDuration = 0;
 
     /**
      * Standard constructor
@@ -216,6 +219,25 @@ public class TimeGraphControl extends TimeGraphBaseControl
                 font.dispose();
             }
         });
+    }
+
+    /**
+     * Sets the minimum duration of the time events shown by this timegraph viewer.
+     *
+     * @param duration the duration value
+     */
+    public void setMinDuration(long duration) {
+        fMinDuration = duration;
+        refreshData();
+    }
+
+    /**
+     * Gets the minimum duration of the time events shown by this timegraph viewer.
+     *
+     * @return the minimum duration.
+     */
+    public long getMinDuration() {
+        return fMinDuration;
     }
 
     /**
@@ -1947,7 +1969,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
             setFontForHeight(height, gc);
 
             long maxDuration = (timeProvider.getTimeSpace() == 0) ? Long.MAX_VALUE : 1 * (time1 - time0) / timeProvider.getTimeSpace();
-            Iterator<ITimeEvent> iterator = entry.getTimeEventsIterator(time0, time1, maxDuration);
+            Iterator<ITimeEvent> iterator = entry.getTimeEventsIterator(time0, time1, maxDuration, fMinDuration);
 
             int lastX = -1;
             while (iterator.hasNext()) {
@@ -2230,7 +2252,6 @@ public class TimeGraphControl extends TimeGraphBaseControl
      */
     protected boolean drawState(TimeGraphColorScheme colors, ITimeEvent event,
             Rectangle rect, GC gc, boolean selected, boolean timeSelected) {
-
         int colorIdx = fTimeGraphProvider.getStateTableIndex(event);
         if (colorIdx < 0 && colorIdx != ITimeGraphPresentationProvider.TRANSPARENT) {
             return false;
